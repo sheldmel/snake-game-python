@@ -76,7 +76,7 @@ class Snake:
 class Game:
     def __init__(self):
         pygame.init()
-        pygame.display.set_caption("Codebasics Snake And Apple Game")
+        pygame.display.set_caption("Snake Game")
 
         pygame.mixer.init()
         self.play_background_music()
@@ -132,7 +132,7 @@ class Game:
                 self.play_sound('crash')
                 raise "Collision Occurred"
 
-        # snake colliding with the boundries of the window
+        # snake colliding with the boundaries of the window
         if not(0 <= self.snake.x[0] <= 1000 and 0 <= self.snake.y[0] <= 800):
             self.play_sound('crash')
             raise "Hit the boundary"
@@ -198,3 +198,5 @@ class Game:
                 time.sleep(.1)
             else:
                 time.sleep(.3)
+
+
