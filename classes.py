@@ -7,7 +7,7 @@ class Game:
     def __init__(self):
         pygame.init()
         self.surface = pygame.display.set_mode((1000, 800))
-        self.surface.fill((110, 110, 5))
+        self.surface.fill(BACKGROUND_COLOR)
         self.snake = Snake(self.surface, 1)
         self.snake.draw()
         self.apple = Apple(self.surface)
@@ -23,10 +23,28 @@ class Game:
         self.apple.draw()
         self.display_score()
         pygame.display.flip()
-        
+
         if self.detect_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.snake.increase_length()
             self.apple.move()
+
+        for i in range(3, self.snake.length):
+            if self.detect_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+                raise "GAME OVER"
+
+    def reset(self):
+        self.snake = Snake(self.surface, 1)
+        self.snake.draw()
+        self.apple = Apple(self.surface)
+
+    def show_game_over(self):
+        self.surface.fill(BACKGROUND_COLOR)
+        font = pygame.font.SysFont('consolas', 30)
+        line1 = font.render(f'GAME OVER ! Score: {self.snake.length}', True, 'white')
+        self.surface.blit(line1, (200, 300))
+        line2 = font.render(f'Press Enter to play again. press Esc to exit!', True, 'white')
+        self.surface.blit(line2, (200, 350))
+        pygame.display.flip()
 
     def display_score(self):
         font = pygame.font.SysFont('consolas', 30)
@@ -35,11 +53,16 @@ class Game:
 
     def run(self):
         running = True
+        pause = False
+
         while running:
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         running = False
+
+                    if event.key == K_RETURN:
+                        pause = False
 
                     if event.key == K_UP:
                         self.snake.move_up()
@@ -55,13 +78,18 @@ class Game:
 
                 elif event.type == QUIT:
                     running = False
-
-            self.play()
+            try:
+                if not pause:
+                    self.play()
+            except Exception as e:
+                self.show_game_over()
+                pause = True
+                self.reset()
             time.sleep(0.3)
 
 
 SIZE = 40
-
+BACKGROUND_COLOR = (110, 110, 5)
 
 class Apple:
     def __init__(self, parent_screen):
@@ -90,7 +118,7 @@ class Snake:
         self.direction = 'down'
 
     def draw(self):
-        self.parent_screen.fill((110, 110, 5))
+        self.parent_screen.fill(BACKGROUND_COLOR)
         for i in range(self.length):
             self.parent_screen.blit(self.block, (self.x[i], self.y[i]))
             pygame.display.flip()
